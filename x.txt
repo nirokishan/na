@@ -1,0 +1,771 @@
+import java.util.*;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public class PlayFairCryptography {
+
+	static String removeDuplicateElemetsFromKey(String key) {
+		if ("" != key && null != key) {
+			char array[] = new char[key.length()];
+			for (int i = 0; i < array.length; i++) {
+				if (isNotContains(array, key.charAt(i))) {
+					array[i] = key.charAt(i);
+				}
+			}
+			return removeEmptyElements(array);
+		}
+		return "";
+	}
+
+	static boolean isNotContains(char[] array, char c) {
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == c) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	static String removeEmptyElements(char[] array) {
+		String arrayString = "";
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] != '\u0000') {
+				arrayString += array[i];
+			}
+		}
+		return arrayString;
+	}
+
+	static String createKeyAndAlpabetArray(char[] alpabet, String key) {
+		char array[] = new char[25];
+		for (int i = 0; i < key.length(); i++) {
+			array[i] = key.charAt(i);
+		}
+		int count = key.length();
+		for (int i = 0; i < array.length; i++) {
+
+			if (isNotContains(array, alpabet[i])) {
+				array[count] = alpabet[i];
+
+				count++;
+			}
+		}
+		return removeEmptyElements(array);
+	}
+
+	static char[][] createKeyMatrix(String keyString) {
+		char matrix[][] = new char[5][5];
+		int k = 0;
+		for (int i = 0; i < 5; i++) {
+			for (int j = 0; j < 5; j++) {
+				matrix[i][j] = keyString.charAt(k);
+				k++;
+			}
+		}
+		return matrix;
+	}
+
+	static void printKeyMatixform(char[][] matrix) {
+		for (int i = 0; i < 5; i++) {
+			for (int j = 0; j < 5; j++) {
+				System.out.print(matrix[i][j] + "   ");
+			}
+			System.out.println();
+		}
+	}
+
+	static String toString(char[] ch) {
+		String result = "";
+		for (int i = 0; i < ch.length; i++) {
+			result += ch[i];
+		}
+		return result;
+	}
+
+	static int arrayLength(String str) {
+		// Calculating the length of the array that store plaintext after grouped as
+		// pairs
+		int q = 0;
+		int y = 0;
+		while (str.charAt(q) != ' ') {
+			if (str.charAt(q) == str.charAt(q + 1)) {
+				q++;
+				y = y + 2;
+			} else {
+				if (str.charAt(q + 1) == ' ') {
+					y = y + 2;
+					q++;
+				} else {
+					y = y + 2;
+					q = q + 2;
+				}
+			}
+		}
+		return y;
+	}
+
+	static char[] breakingTheStringAsPairs(String str) {
+		// str.length();
+		char textArr[] = new char[arrayLength(str)];
+		int q = 0;
+		int y = 0;
+		// Breaking plaintext as pairs
+		while (y != textArr.length) {
+			if (str.charAt(q) == str.charAt(q + 1)) {
+				textArr[y] = str.charAt(q);
+				textArr[y + 1] = 'X';
+				q++;
+				y = y + 2;
+			} else {
+				if (str.charAt(q + 1) == ' ') {
+					textArr[y] = str.charAt(q);
+					textArr[y + 1] = 'X';
+					y = y + 2;
+					q++;
+				} else {
+					textArr[y] = str.charAt(q);
+					textArr[y + 1] = str.charAt(q + 1);
+					y = y + 2;
+					q = q + 2;
+				}
+			}
+		}
+		return textArr;
+	}
+
+	static int rowIndex(char matrix[][], char letter) {
+		int row = 0;
+
+		for (int r = 0; r < 5; r++) {
+			for (int c = 0; c < 5; c++) {
+				if (matrix[r][c] == letter) {
+					row = r;
+				}
+			}
+		}
+		return row;
+	}
+
+	static int columnIndex(char matrix[][], char letter) {
+		int column = 0;
+
+		for (int r = 0; r < 5; r++) {
+			for (int c = 0; c < 5; c++) {
+				if (matrix[r][c] == letter) {
+					column = c;
+				}
+			}
+		}
+		return column;
+	}
+
+	static String encryption(String str, String key, char[][] matrix) {
+
+		char[] textArr = breakingTheStringAsPairs(str);
+		char[] cipher = new char[arrayLength(str)];
+
+		
+		char letter1, letter2;
+		int p = 0;
+
+		int r1 = 0;
+		int r2 = 0;
+
+		int c1 = 0;
+		int c2 = 0;
+
+		int index = 0;
+
+		for (int i = 0; i < cipher.length / 2; i++) {
+			letter1 = textArr[p];
+			p++;
+
+			r1 = rowIndex(matrix, letter1);
+			c1 = columnIndex(matrix, letter1);
+
+			letter2 = textArr[p];
+			p++;
+
+			r2 = rowIndex(matrix, letter2);
+			c2 = columnIndex(matrix, letter2);
+
+			if (r1 == r2) {
+				if (c1 == 4) {
+					cipher[index] = matrix[r1][(c1 + 1) % 5];
+					index++;
+				} else {
+					cipher[index] = matrix[r1][c1 + 1];
+					index++;
+				}
+
+				if (c2 == 4) {
+					cipher[index] = matrix[r2][(c2 + 1) % 5];
+					index++;
+				} else {
+					cipher[index] = matrix[r2][c2 + 1];
+					index++;
+				}
+			}
+
+			else if (c1 == c2) {
+				if (r1 == 4) {
+					cipher[index] = matrix[(r1 + 1) % 5][c1];
+					index++;
+				} else {
+					cipher[index] = matrix[r1 + 1][c1];
+					index++;
+				}
+
+				if (r2 == 4) {
+					cipher[index] = matrix[(r2 + 1) % 5][c2];
+					index++;
+				} else {
+					cipher[index] = matrix[r2 + 1][c2];
+					index++;
+				}
+			}
+
+			else {
+				cipher[index] = matrix[r1][c2];
+				index++;
+
+				cipher[index] = matrix[r2][c1];
+				index++;
+			}
+		}
+
+		return toString(cipher);
+	}
+	static char[] toArray(String str){
+		char arr[] = new char[str.length()-2];
+		for (int i = 0; i < str.length()-2; i++) {
+			arr[i] = str.charAt(i);
+		}
+		return arr;
+	}
+	static String removeFillerCharacter(char[] arr){
+		String plainText="";
+		for (int i = 0; i < arr.length; i++) {
+			if (arr[i] != 'X') {
+				plainText += arr[i];
+			}
+		}
+		return plainText;
+	}
+	public static void main(String[] args) {
+
+		char alphabet[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+				'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
+
+		Scanner sc = new Scanner(System.in);
+
+		System.out.print("Enter the message : ");
+		String str1 = sc.nextLine();
+		String message = (str1.toUpperCase() + " " + " ");
+
+		System.out.println();
+
+		System.out.print("Enter the key : ");
+		String key1 = sc.nextLine();
+		String key = key1.toUpperCase();
+
+		String uniqueKeyString = removeDuplicateElemetsFromKey(key);
+		System.out.println(uniqueKeyString);
+
+		String uniqueArrayString = createKeyAndAlpabetArray(alphabet, uniqueKeyString);
+		System.out.println(uniqueArrayString);
+
+		char[][] keyMatrix = createKeyMatrix(uniqueArrayString);
+		printKeyMatixform(keyMatrix);
+
+		System.out.println("Select the option : ");
+		System.out.println("	1.Encryption");
+		System.out.println("	2.Decryption");
+
+		System.out.print("Option(1/2) : ");
+		int option = sc.nextInt();
+
+		String cipherText = "";
+
+		if (option == 1) {
+			cipherText = encryption(message, key, keyMatrix);
+			System.out.println("cipherText : " + cipherText);
+		}
+		// else if (option == 2) {
+			// String OriginalText = decryption(message, key, keyMatrix);
+			// System.out.println("Original Text : " + OriginalText);
+		// }
+		// else {
+			// System.out.println("Invalid option");
+		// }
+	}
+}
+
+
+
+import java.util.*;
+public class OTPAlgorithm{
+	
+	static String encryption(char[] alphaArr,String msg, String key)
+	{
+		msg = msg.toUpperCase();
+		key = key.toUpperCase();
+		String cypherText = "";
+		for(int i=0;i<msg.length();i++)
+		{
+			char msgCh = msg.charAt(i);
+			for(int j=0;j<alphaArr.length;j++)
+			{
+				if(msgCh==alphaArr[j])
+				{
+					for(int k=0;k<alphaArr.length;k++)
+					{
+						char keyCh = key.charAt(i);
+						if(keyCh==alphaArr[k])
+						{
+							int charPosition = (j+k)%26;
+							char encryptChar = alphaArr[charPosition];
+							cypherText += encryptChar;
+						}
+						
+					}
+				}
+			}
+		}
+		return cypherText;
+	
+	}
+	
+	static String decryption(char[] alphaArr,String encryptedText, String key)
+	{
+		encryptedText = encryptedText.toUpperCase();
+		key = key.toUpperCase();
+		String plainText = "";
+		for(int i=0;i<encryptedText.length();i++)
+		{
+			char encryptedTextCh = encryptedText.charAt(i);
+			for(int j=0;j<alphaArr.length;j++)
+			{
+				if(encryptedTextCh==alphaArr[j])
+				{
+					for(int k=0;k<alphaArr.length;k++)
+					{
+						char keyCh = key.charAt(i);
+						if(keyCh==alphaArr[k])
+						{
+							int charPosition = (j-k)%26;
+							if(charPosition<0)
+							{
+								charPosition=charPosition+26;
+							}
+							char decryptChar = alphaArr[charPosition];
+							plainText += decryptChar;
+						}
+						
+					}
+				}
+			}
+		}
+		return plainText;
+	
+	}
+	
+	public static void main(String[] args){
+		
+		char[] alphaArr = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+		Scanner scan = new Scanner(System.in);
+		System.out.print("Enter the plaintext : ");
+		String msg = scan.nextLine();
+		System.out.println();
+		System.out.print("Enter the key : ");
+		String key = scan.nextLine();
+		
+		String encryptedText = encryption(alphaArr,msg,key);
+		String decryptedText = decryption(alphaArr,encryptedText,key);
+		if(msg.length()==key.length())
+		{
+			System.out.print("The Encrypted Text : "+encryptedText);
+			System.out.println();
+			System.out.print("The Decrypted Text : "+decryptedText);
+		}
+		else
+		System.out.print("Key Text not support Enter the key as same length of message!!!");
+		
+	}
+}
+
+import java.util.Scanner;
+public class Railfence{
+	public static char[][] fillingTheArrayWithCharacter(String text,int key,char ch){
+		char[][] rail = new char[key][text.length()];
+		for(int i=0;i<key;i++)
+		{
+			 for(int j=0;j<text.length();j++)
+			 {
+				rail[i][j]=ch;
+			 }
+			
+		}
+		return rail;
+	}
+	static String encryption(String text, int key){
+		
+		char[][] rail = fillingTheArrayWithCharacter(text,key,'\n');
+		boolean dirDown = false;
+		int row = 0;
+		int col = 0;
+		
+		for(int i=0;i<text.length();i++)
+		{
+			if(row==0 || row==key-1)
+			{
+				dirDown = !dirDown;
+			}
+			rail[row][col++] = text.charAt(i);
+			if(dirDown)
+				row++;
+			else
+				row--;
+		}
+		
+		String result = "";
+		for(int i=0;i<key;i++)
+		{
+			 for(int j=0;j<text.length();j++)
+			 {
+				if(rail[i][j] != '\n')
+				{
+					result += rail[i][j];
+				}
+			 }
+		}
+		return result;
+	 }
+	 
+	 static String decryption(String cipher, int key){
+		
+		char[][] rail = fillingTheArrayWithCharacter(cipher,key,'\n');
+		boolean dirDown = false;
+		int row = 0;
+		int col = 0;
+		
+		for(int i=0;i<cipher.length();i++)
+		{
+			if(row==0)
+			{
+				dirDown = true;
+			}
+			if(row==key-1)
+			{
+				dirDown = false;
+			}
+			rail[row][col++] = '*';
+			if(dirDown)
+				row++;
+			else
+				row--;
+		}
+		
+		int index = 0;
+		for(int i=0;i<key;i++)
+		{
+			 for(int j=0;j<cipher.length();j++)
+			 {
+				if(rail[i][j] == '*' && index < cipher.length())
+				{
+					rail[i][j] = cipher.charAt(index++);
+				}
+			 }
+		}
+		
+		String result = "";
+		row=0;
+		col=0;
+		for(int i=0;i<cipher.length();i++)
+		{
+			if(row==0)
+				dirDown = true;
+			if(row==key-1)
+				dirDown=false;
+			
+			if(rail[row][col] != '\n')
+				result += rail[row][col++];
+			
+			if(dirDown)
+				row++;
+			else
+				row--;
+		}
+		return result;
+	 }
+	
+	public static void main(String[] args){
+		Scanner scan = new Scanner(System.in);
+		System.out.println("Enter The Plaintext : ");
+		String plainText = scan.nextLine();
+		System.out.println("Enter The Depth : ");
+		int depth = scan.nextInt();
+		
+		String cypherText = encryption(plainText, depth);
+		System.out.println("Encrypted text : "+cypherText);
+		System.out.println();
+		String plainText2 = decryption(cypherText, depth);
+		System.out.println("Decrypted text : "+plainText2);
+	}
+	
+	}
+	
+	import java.util.*; 
+public class CaeserCipherAlgorithm{
+	static final String alphabet = "abcdefghijklmnopqrstuvwxyz" ;
+	static String encrypt(String msg, int key)
+	{
+		msg = msg.toLowerCase();
+		String cipherText = "";
+		
+		for(int i=0;i<msg.length();i++)
+		{
+			char ch = msg.charAt(i);
+			int charPosition = alphabet.indexOf(ch);
+			int keyValue = (charPosition+key)%26;
+			char repalceLetter = alphabet.charAt(keyValue);
+			cipherText = cipherText + repalceLetter;
+		}
+		return cipherText;
+	}
+	
+	static String decrypt(String cipherText, int key)
+	{
+		cipherText = cipherText.toLowerCase();
+		String originalMsg = "";
+		
+		for(int i=0;i<cipherText.length();i++)
+		{
+			char ch = cipherText.charAt(i);
+			int charPosition = alphabet.indexOf(ch);
+			int keyValue = (charPosition-key)%26;
+			if(keyValue<0)
+			{
+				keyValue = alphabet.length() + keyValue;
+			}
+			char repalceLetter = alphabet.charAt(keyValue);
+			originalMsg = originalMsg + repalceLetter;
+			originalMsg = originalMsg.toUpperCase();
+		}
+		return originalMsg;
+	}
+	public static void main(String[] args){
+		Scanner scan = new Scanner(System.in);
+		String msg;
+		int key;
+		System.out.println("Enter the text : ");
+		msg = scan.nextLine();
+		System.out.println("Enter the Key value : ");
+		key = scan.nextInt();
+		
+		String encryptText = encrypt(msg,key);
+		System.out.println("The Encrypted Text : ");
+		System.out.println(encryptText);
+		
+		String cipherText = encrypt(msg,key);
+		String decryptText = decrypt(cipherText,key);
+		System.out.println("The Decrypted Text : ");
+		System.out.println(decryptText);	
+	}
+}
+
+import java.util.*;
+public class PolyalphabeticCipher{
+	static String generateKeyMethod(String plainText, String keyWord){
+		int x = plainText.length();
+		String key = "";
+		if(keyWord.length()<=plainText.length())
+		{
+			for(int i=0;i<x;i++)
+			{	
+				if(keyWord.length()!=plainText.length())
+					keyWord = keyWord + keyWord.charAt(i);
+				else
+					break;
+			}
+			return keyWord;
+		}
+		else{
+			for(int i=0;i<x;i++)
+			{	
+				key = key + keyWord.charAt(i);
+			}
+			return key;
+		}
+		
+	} 
+	static String encryption(String plainText, String key)
+	{
+		plainText=plainText.toUpperCase();
+		key = key.toUpperCase();
+		String encryptedText = "";
+		for(int i=0;i<plainText.length();i++)
+		{
+			int x = (plainText.charAt(i)+key.charAt(i))%26;
+			x += 'A';
+			encryptedText = encryptedText + (char)x;
+		}
+		return encryptedText;
+	}
+	static String decryption(String encryptedText, String key)
+	{
+		encryptedText=encryptedText.toUpperCase();
+		key = key.toUpperCase();
+		String decryptedText = "";
+		for(int i=0;i<encryptedText.length();i++)
+		{
+			int x = (encryptedText.charAt(i)-key.charAt(i)+26)%26;
+			x += 'A';
+			decryptedText = decryptedText + (char)x;
+		}
+		return decryptedText;
+	}
+	public static void main(String[] args){
+		String plainText = "KOWTHAMAN";
+		String keyWord = "June";
+
+		String key = generateKeyMethod(plainText,keyWord);
+		System.out.print("The New Key : "+key);
+		System.out.println();
+		String encryptedText = encryption(plainText, key);
+		System.out.print("The Encrypted Text is : "+encryptedText);
+		System.out.println();
+		String decryptedText = decryption(encryptedText, key);
+		System.out.print("The Decrypted Text is : "+decryptedText);
+	}
+}
+
+import java.util.*;
+public class MonoalphabeticCipher{
+	static void encryption(char[] plainArr, char[] cipherArr, String word)
+	{
+		word = word.toLowerCase();
+		System.out.println("PlainText : "+word);
+		System.out.print("CipherText : ");
+		for(int i=0;i<word.length();i++)
+		{
+			for(int j=0;j<cipherArr.length;j++)
+			{
+				if(word.charAt(i)==plainArr[j])
+				{
+					System.out.print(cipherArr[j]);
+				}
+			}
+		}
+	}
+	static void decryption(char[] plainArr, char[] cipherArr, String word)
+	{
+		word = word.toLowerCase();
+		System.out.println("CipherText : "+word);
+		System.out.print("PlainText : ");
+		for(int i=0;i<word.length();i++)
+		{
+			for(int j=0;j<plainArr.length;j++)
+			{
+				if(word.charAt(i)==cipherArr[j])
+				{
+					System.out.print(plainArr[j]);
+				}
+			}
+		}
+	}
+	public static void main(String[] args){
+		char[] plainArr = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+		char[] cipherArr = {'d','k','v','q','f','i','b','j','w','p','e','s','c','x','h','t','m','y','a','u','o','l','r','g','z','n'};
+		Scanner scan = new Scanner(System.in);
+		System.out.println("Enter the word : ");
+		String word = scan.nextLine();
+		System.out.println("Enter option (1=encryption or 2=decryption) : ");
+		int opt = scan.nextInt();
+		if(opt==1)
+		{
+			encryption(plainArr,cipherArr,word);
+		}
+		else if(opt==2)
+		{
+			decryption(plainArr,cipherArr,word);
+		}
+		else
+			System.out.println("Enter the valid option(1 or 2)!!!");
+		
+	}
+}
